@@ -1,64 +1,82 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib> // For rand() and srand()
+#include <ctime>   // For time()
 
-// Function to print the array
-void printArray(const std::vector<int>& arr) {
-    for (int num : arr) {
-        std::cout << num << " ";
+// Function to print the current state of the array
+void printArray(const std::vector<int>& arr, int pivotIndex = -1, int left = -1, int right = -1) {
+    for (size_t i = 0; i < arr.size(); ++i) {
+        if (i == pivotIndex)
+            std::cout << "[" << arr[i] << "] "; // Highlight pivot
+        else if (i == left)
+            std::cout << "{" << arr[i] << "} "; // Highlight left
+        else if (i == right)
+            std::cout << "(" << arr[i] << ") "; // Highlight right
+        else
+            std::cout << arr[i] << " ";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
-// Partition function for Quick Sort
+// Partition function
 int partition(std::vector<int>& arr, int low, int high) {
-    int pivot = arr[high]; // Choosing the last element as the pivot
+    int pivot = arr[high]; // Choose the last element as pivot
     int i = low - 1;       // Index of smaller element
 
-    std::cout << "\nPartitioning around pivot " << pivot << ":\n";
-    for (int j = low; j < high; j++) {
+    std::cout << "Pivot chosen: " << pivot << "\n";
+
+    for (int j = low; j < high; ++j) {
         if (arr[j] < pivot) {
-            i++;
+            ++i;
             std::swap(arr[i], arr[j]);
-            std::cout << "Swapping " << arr[i] << " and " << arr[j] << ": ";
-            printArray(arr);
+            std::cout << "Swapped " << arr[i] << " and " << arr[j] << " -> ";
+            printArray(arr, high, i, j);
         }
     }
-    std::swap(arr[i + 1], arr[high]);
-    std::cout << "Swapping pivot " << arr[high] << " to position " << i + 1 << ": ";
-    printArray(arr);
+    std::swap(arr[i + 1], arr[high]); // Place pivot in the correct position
+    std::cout << "Placed pivot " << pivot << " -> ";
+    printArray(arr, i + 1);
     return i + 1;
 }
 
-// Quick Sort function
+// QuickSort function
 void quickSort(std::vector<int>& arr, int low, int high) {
     if (low < high) {
-        // Partition index
-        int pi = partition(arr, low, high);
+        std::cout << "Sorting range: ";
+        printArray(arr, -1, low, high);
 
-        std::cout << "\nArray after partitioning: ";
-        printArray(arr);
+        int pi = partition(arr, low, high); // Partition index
 
-        // Recursively sort the subarrays
-        std::cout << "\nSorting left subarray (index " << low << " to " << pi - 1 << "):\n";
-        quickSort(arr, low, pi - 1);
+        std::cout << "Partitioned at index " << pi << "\n";
 
-        std::cout << "\nSorting right subarray (index " << pi + 1 << " to " << high << "):\n";
-        quickSort(arr, pi + 1, high);
+        quickSort(arr, low, pi - 1);  // Sort the left subarray
+        quickSort(arr, pi + 1, high); // Sort the right subarray
     }
 }
 
-int main() {
-    // Input array
-    std::vector<int> arr = {10, 7, 8, 9, 1, 5};
-    int n = arr.size();
+// Function to generate a random array
+std::vector<int> generateRandomArray(int size, int minValue, int maxValue) {
+    std::vector<int> arr(size);
+    for (int& num : arr) {
+        num = minValue + rand() % (maxValue - minValue + 1);
+    }
+    return arr;
+}
 
-    std::cout << "Initial array: ";
+int main() {
+    std::srand(std::time(nullptr)); // Seed the random number generator
+
+    // Generate a random array
+    int size = 10; // Size of the array
+    int minValue = 1, maxValue = 100; // Range of random values
+    std::vector<int> arr = generateRandomArray(size, minValue, maxValue);
+
+    std::cout << "Initial random array: ";
     printArray(arr);
 
-    // Perform Quick Sort
-    quickSort(arr, 0, n - 1);
+    quickSort(arr, 0, arr.size() - 1);
 
-    std::cout << "\nSorted array: ";
+    std::cout << "Sorted array: ";
     printArray(arr);
 
     return 0;
