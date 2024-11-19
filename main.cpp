@@ -5,7 +5,7 @@
 
 // Function to print the current state of the array
 void printArray(const std::vector<int>& arr, int pivotIndex = -1, int left = -1, int right = -1) {
-    for (size_t i = 0; i < arr.size(); ++i) {
+    for (int i = 0; i < arr.size(); ++i) {
         if (i == pivotIndex)
             std::cout << "[" << arr[i] << "] "; // Highlight pivot
         else if (i == left)
